@@ -4,7 +4,10 @@ import {
   getCategoryById,
 } from "@/lib/data/functionality-categories";
 import { matchSymptomToCategoryId } from "@/lib/data/symptom-dictionary";
-import { matchRedFlag } from "@/lib/data/red-flag-dictionary";
+import {
+  matchEmergencyCategory,
+  type EmergencyMatch,
+} from "@/lib/data/red-flag-dictionary";
 
 export type Ingredient = {
   id: string;
@@ -35,13 +38,12 @@ export type SymptomSearchResult =
       status: "unmatched";
       availableCategories: CategorySummary[];
     }
-  | { status: "self-harm" }
-  | { status: "emergency" };
+  | { status: "emergency"; category: EmergencyMatch };
 
 export function searchIngredientsBySymptom(input: string): SymptomSearchResult {
-  const redFlag = matchRedFlag(input);
-  if (redFlag) {
-    return { status: redFlag };
+  const emergency = matchEmergencyCategory(input);
+  if (emergency) {
+    return { status: "emergency", category: emergency };
   }
 
   const categoryId = matchSymptomToCategoryId(input);
