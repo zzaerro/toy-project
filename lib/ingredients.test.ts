@@ -68,6 +68,26 @@ describe("searchIngredientsBySymptom", () => {
     assertUnmatched(result);
   });
 
+  it("신체 응급 신호가 담긴 입력은 성분 결과 대신 응급 안내 상태를 반환한다", () => {
+    const result = searchIngredientsBySymptom("가슴이 답답하고 숨쉬기 힘들다");
+    expect(result.status).toBe("emergency");
+  });
+
+  it("자해·자살 신호가 담긴 입력은 성분 결과 대신 자해 안내 상태를 반환한다", () => {
+    const result = searchIngredientsBySymptom("죽고 싶다");
+    expect(result.status).toBe("self-harm");
+  });
+
+  it("응급 신호와 기능성 범주 키워드가 함께 있어도 성분 결과가 아니라 응급 안내를 반환한다", () => {
+    const result = searchIngredientsBySymptom("가슴 통증이 있고 잠도 안 온다");
+    expect(result.status).toBe("emergency");
+  });
+
+  it("응급 신호와 자해 신호가 함께 있으면 자해 안내를 우선한다", () => {
+    const result = searchIngredientsBySymptom("가슴이 아프고 죽고 싶다");
+    expect(result.status).toBe("self-harm");
+  });
+
   it("같은 이름의 성분은 데이터 전체에서 단 하나만 존재한다", () => {
     const names = (rawIngredients as { name: string }[]).map((i) => i.name);
     const unique = new Set(names);
