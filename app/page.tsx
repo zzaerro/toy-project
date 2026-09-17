@@ -66,6 +66,27 @@ export default function Home() {
           </AlertDescription>
         </Alert>
 
+        {result?.status === "emergency" && (
+          <Alert variant="destructive">
+            <AlertTitle>병원 진료가 필요할 수 있습니다</AlertTitle>
+            <AlertDescription>
+              입력하신 증상은 이 서비스가 다룰 수 있는 범위를 넘어서는
+              것으로 보입니다. 가까운 병원이나 응급실을 방문하거나 119에
+              연락하시기 바랍니다.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {result?.status === "self-harm" && (
+          <Alert variant="destructive">
+            <AlertTitle>혼자 감당하기 어려울 수 있습니다</AlertTitle>
+            <AlertDescription>
+              자살예방상담전화 1393(24시간, 리다이얼 무료)으로 연락해보세요.
+              당신은 혼자가 아닙니다.
+            </AlertDescription>
+          </Alert>
+        )}
+
         {result?.status === "matched" && (
           <section className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5 text-sm text-muted-foreground">
