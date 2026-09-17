@@ -68,24 +68,34 @@ describe("searchIngredientsBySymptom", () => {
     assertUnmatched(result);
   });
 
-  it("신체 응급 신호가 담긴 입력은 성분 결과 대신 응급 안내 상태를 반환한다", () => {
+  it("법정 응급증상 표현이 담긴 입력은 성분 결과 대신 응급 안내 상태를 반환하고, 어떤 범주로 판단했는지 담는다", () => {
     const result = searchIngredientsBySymptom("가슴이 답답하고 숨쉬기 힘들다");
     expect(result.status).toBe("emergency");
+    if (result.status === "emergency") {
+      expect(result.category.label).toBe("심혈관계 응급증상");
+      expect(result.category.isMentalHealth).toBe(false);
+    }
   });
 
-  it("자해·자살 신호가 담긴 입력은 성분 결과 대신 자해 안내 상태를 반환한다", () => {
+  it("정신과적 응급증상 표현은 자살예방상담전화 안내가 필요함을 표시한다", () => {
     const result = searchIngredientsBySymptom("죽고 싶다");
-    expect(result.status).toBe("self-harm");
+    expect(result.status).toBe("emergency");
+    if (result.status === "emergency") {
+      expect(result.category.label).toBe("정신과적 응급증상");
+      expect(result.category.isMentalHealth).toBe(true);
+    }
   });
 
-  it("응급 신호와 기능성 범주 키워드가 함께 있어도 성분 결과가 아니라 응급 안내를 반환한다", () => {
+  it("응급증상 표현과 기능성 범주 키워드가 함께 있어도 성분 결과가 아니라 응급 안내를 반환한다", () => {
     const result = searchIngredientsBySymptom("가슴 통증이 있고 잠도 안 온다");
     expect(result.status).toBe("emergency");
   });
 
-  it("응급 신호와 자해 신호가 함께 있으면 자해 안내를 우선한다", () => {
-    const result = searchIngredientsBySymptom("가슴이 아프고 죽고 싶다");
-    expect(result.status).toBe("self-harm");
+  it("기존 증상 키워드와 겹치는 법정 단어(당뇨, 배뇨)는 응급으로 걸리지 않아 회귀가 없다", () => {
+    expect(searchIngredientsBySymptom("당뇨가 있어요").status).toBe("matched");
+    expect(searchIngredientsBySymptom("소변을 자주 봐요").status).toBe(
+      "matched"
+    );
   });
 
   it("같은 이름의 성분은 데이터 전체에서 단 하나만 존재한다", () => {

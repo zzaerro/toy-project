@@ -58,37 +58,37 @@ export default function Home() {
           <Button type="submit">찾기</Button>
         </form>
 
-        <Alert>
-          <AlertTitle>진단이 아닙니다</AlertTitle>
-          <AlertDescription>
-            이 결과는 진단이 아닙니다. 증상이 계속되면 의료 전문가와
-            상담하시기 바랍니다.
-          </AlertDescription>
-        </Alert>
-
         {result?.status === "emergency" && (
           <Alert variant="destructive">
-            <AlertTitle>병원 진료가 필요할 수 있습니다</AlertTitle>
+            <AlertTitle>병원 진료가 필요합니다</AlertTitle>
             <AlertDescription>
-              입력하신 증상은 이 서비스가 다룰 수 있는 범위를 넘어서는
-              것으로 보입니다. 가까운 병원이나 응급실을 방문하거나 119에
+              입력하신 증상은 응급의료에 관한 법률 시행규칙이 정한
+              응급증상({result.category.label})에 해당하는 것으로
+              보입니다. 이는 저희가 정한 기준이 아니라 법이 정한
+              기준입니다. 가까운 병원이나 응급실을 방문하거나 119에
               연락하시기 바랍니다.
-            </AlertDescription>
-          </Alert>
-        )}
-
-        {result?.status === "self-harm" && (
-          <Alert variant="destructive">
-            <AlertTitle>혼자 감당하기 어려울 수 있습니다</AlertTitle>
-            <AlertDescription>
-              자살예방상담전화 1393(24시간, 리다이얼 무료)으로 연락해보세요.
-              당신은 혼자가 아닙니다.
+              {result.category.isMentalHealth && (
+                <>
+                  {" "}
+                  혼자 감당하기 어렵다면 자살예방상담전화 1393(24시간,
+                  통화료 무료)으로도 연락해보세요.
+                </>
+              )}
             </AlertDescription>
           </Alert>
         )}
 
         {result?.status === "matched" && (
           <section className="flex flex-col gap-4">
+            <Alert>
+              <AlertTitle>영양 성분은 치료제가 아닙니다</AlertTitle>
+              <AlertDescription>
+                여기서 안내하는 성분은 치료 목적이 아니라 보조적인 도움을
+                줄 수 있는 정보입니다. 증상이 계속되면 의료 전문가와
+                상담하시기 바랍니다.
+              </AlertDescription>
+            </Alert>
+
             <div className="flex flex-col gap-1.5 text-sm text-muted-foreground">
               <p>
                 입력하신 증상을{" "}
@@ -140,6 +140,15 @@ export default function Home() {
                 </Card>
               ))}
             </div>
+
+            <Alert>
+              <AlertTitle>증상이 오래 계속된다면</AlertTitle>
+              <AlertDescription>
+                며칠 이상 증상이 계속되거나 나아지지 않는다면, 다른 원인이
+                있을 수 있습니다. 병원에서 정확한 진단을 받아보시기
+                바랍니다.
+              </AlertDescription>
+            </Alert>
           </section>
         )}
 
