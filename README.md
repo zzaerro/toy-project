@@ -31,6 +31,7 @@ bun dev
 | `bun run test` | Vitest 단위/컴포넌트 테스트 1회 실행 |
 | `bun run test:watch` | Vitest watch 모드 |
 | `bun run test:e2e` | Playwright E2E 테스트 실행 |
+| `bun run data:build` | `data/i2710-raw.csv`에서 `lib/data/ingredients.generated.json` 재생성 |
 
 ## 테스트
 
@@ -50,6 +51,24 @@ PLAYWRIGHT_CHROMIUM_PATH=/opt/pw-browsers/chromium bun run test:e2e
 ```
 
 `async` Server Component는 Vitest가 아직 지원하지 않으므로 E2E로 검증합니다.
+
+## 증상으로 성분 찾기 데이터
+
+`lib/data/ingredients.generated.json`은 식약처 건강기능식품 품목분류정보(I2710) 원본을
+`data/i2710-raw.csv`에서 정제해 만든 결과물입니다. 앱은 이 JSON만 읽고, 실행 중에 외부
+API를 호출하지 않습니다.
+
+원본을 다시 받아 재생성하려면([foodsafetykorea.go.kr](https://www.foodsafetykorea.go.kr/api/openApiInfo.do?svc_no=I2710)에서
+인증키를 발급받은 뒤):
+
+```bash
+curl -s -o data/i2710-raw.csv.gz "http://openapi.foodsafetykorea.go.kr/api/<인증키>/I2710/file"
+gzip -d data/i2710-raw.csv.gz
+bun run scripts/build-ingredients-data.ts
+```
+
+JSON 호출(`/json/...`)은 09~19시에 막히지만 파일 경로(`/file`)는 시간 제한이 없습니다.
+인증키는 `.env.local`처럼 커밋되지 않는 파일에만 둡니다.
 
 ## Claude Code 워크플로우
 
